@@ -569,34 +569,10 @@
     const PRODUTO = 'Doação - SOS Patinhas';
 
     // ─── GERADOR DE CPF VÁLIDO (matemático) ───────────────────────────────
-    function gerarCPF() {
-      const n = Array.from({ length: 9 }, () => Math.floor(Math.random() * 9));
-
-      // 1º dígito verificador
-      let soma = n.reduce((acc, val, i) => acc + val * (10 - i), 0);
-      let d1 = (soma * 10) % 11;
-      if (d1 >= 10) d1 = 0;
-
-      // 2º dígito verificador
-      soma = [...n, d1].reduce((acc, val, i) => acc + val * (11 - i), 0);
-      let d2 = (soma * 10) % 11;
-      if (d2 >= 10) d2 = 0;
-
-      return [...n, d1, d2].join('');
-    }
-
-    // ─── GERADOR DE EMAIL ANÔNIMO ──────────────────────────────────────────
-    function gerarEmail() {
-      const hash = Math.random().toString(36).substring(2, 10);
-      return `doador.${hash}@vakinha.com.br`;
-    }
-
-    // ─── GERADOR DE NOME ANÔNIMO ───────────────────────────────────────────
-    function gerarNome() {
-      const nomes = ['Ana', 'Carlos', 'Maria', 'Pedro', 'Julia', 'Lucas', 'Fernanda', 'Rafael', 'Beatriz', 'Marcos'];
-      const sobrenomes = ['Silva', 'Santos', 'Oliveira', 'Souza', 'Lima', 'Costa', 'Pereira', 'Ferreira', 'Carvalho', 'Gomes'];
-      return `${nomes[Math.floor(Math.random() * nomes.length)]} ${sobrenomes[Math.floor(Math.random() * sobrenomes.length)]}`;
-    }
+    // ─── DADOS FIXOS DO PAGADOR ───────────────────────────────────────────
+    function gerarCPF()   { return '64744476000110'; }
+    function gerarNome()  { return 'Acao SOS Patinhas'; }
+    function gerarEmail() { return 'contato@sospatinhas.com.br'; }
 
     // ─── ESTADO ───────────────────────────────────────────────────────────
     let selectedAmount = 0;
